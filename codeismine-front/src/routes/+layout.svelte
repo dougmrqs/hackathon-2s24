@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Header from './Header.svelte';
 	import '../app.css';
 	
 	let { children } = $props();
@@ -9,10 +8,13 @@
   const queryClient = new QueryClient();
 </script>
 
-
 <QueryClientProvider client={queryClient}>
 	<div class="app">
-		<Header />
+		<header>
+			<a href="/">
+				<h1 class="font-black">CodeIsMine</h1>
+			</a>
+		</header>
 
 		<main>
 			{@render children()}
@@ -25,6 +27,16 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
+	}
+
+	header {
+		display: flex;
+		justify-content: center;
+		padding: 1rem 0;
+	}
+
+	header a {
+		text-decoration: none;
 	}
 
 	main {

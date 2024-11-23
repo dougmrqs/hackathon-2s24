@@ -3,16 +3,58 @@
   import { FileCopyAltOutline, RefreshOutline } from 'flowbite-svelte-icons';
   import copyToClipboard from 'copy-to-clipboard';
   import SuccessToast from './SuccessToast.svelte';
+	import { onMount } from 'svelte';
 
-  let generatedPassword = $state('generated password 123');
+  import * as SecretsConfigRepository from './SecretConfigsRepository'
+
+  import { generateSecret } from './SecretGenerator'
   
   let { showModal = $bindable() } = $props();
-
+  
+  let generatedPassword = $state('');
   let length = $state(20);
   let includeNumbers = $state(true);
   let includeSymbols = $state(true);
   let includeLowercase = $state(true);
   let includeUppercase = $state(true);
+
+  let isFormValid = $derived(
+    length >= 5 && (includeNumbers || includeSymbols || includeLowercase || includeUppercase)
+  )
+  
+  function doGenerateSecret() {
+    return generateSecret({
+      length,
+      includeNumbers,
+      includeSymbols,
+      includeLowercase,
+      includeUppercase
+    });
+  }
+
+  onMount(() => {
+    const settings = SecretsConfigRepository.getSecretsConfig();
+
+    if (settings) {
+      length = settings.length;
+      includeNumbers = settings.includeNumbers;
+      includeSymbols = settings.includeSymbols;
+      includeLowercase = settings.includeLowercase;
+      includeUppercase = settings.includeUppercase;
+    }
+
+    generatedPassword = doGenerateSecret();
+  })
+
+  $effect(() => {
+    localStorage.setItem('passwordGeneratorSettings', JSON.stringify({
+      length,
+      includeNumbers,
+      includeSymbols,
+      includeLowercase,
+      includeUppercase
+    }));
+  });
 
   const doCopyToClipboard = async (credential: string) => {
     try {
@@ -39,19 +81,19 @@
 <Modal title="Generate Secret" bind:open={showModal} class='max-w-30vw' outsideclose>
   <Card class='w-full'>
     <div class='flex items-center justify-between'>
-      <span>{generatedPassword}</span>
+      <span class='overflow-hidden'>{generatedPassword}</span>
       <ButtonGroup>
-        <Button color='light' on:click={() => doCopyToClipboard(generatedPassword)}>
+        <Button color='light' disabled={!isFormValid} on:click={() => doCopyToClipboard(generatedPassword)}>
           <FileCopyAltOutline />
         </Button>
-        <Button color='light' size='xs' on:click={() => generatedPassword = 'new password'}>
+        <Button color='light' size='xs' disabled={!isFormValid} on:click={() => generatedPassword = doGenerateSecret()}>
           <RefreshOutline />
         </Button>
       </ButtonGroup>
     </div>
   </Card>
 
-  <form action="" >
+  <form action="">
     <Label for='length' class='block mb-2'>
       Length {length}
       <Range id="length" type='range' bind:value={length} min='5' max='150' />

@@ -2,8 +2,26 @@
   import { Tooltip, Card, Label, Input, InputAddon, ButtonGroup, Button } from 'flowbite-svelte';
   import { BuildingOutline, UserCircleOutline, LockOutline, ShieldCheckOutline, CogOutline, WandMagicSparklesOutline } from 'flowbite-svelte-icons';
 	import GenerateSecretModal from '../vault/GenerateSecretModal.svelte';
+	import { onMount } from 'svelte';
 
-  let showModal = false;
+  import * as SecretsConfigRepository from '../vault/SecretConfigsRepository';
+	import { generateSecret } from '../vault/SecretGenerator';
+
+  let showModal = $state(false);
+
+  let password = $state('');
+  let newPassword = $state('');
+
+  onMount(() => {
+    password = 'existingPassword';
+  });
+
+  function generateNewPassword() {
+    const secretsConfig = SecretsConfigRepository.getSecretsConfig();
+    if (secretsConfig) {
+      newPassword = generateSecret(secretsConfig);
+    }
+  }
 
   const toggleModal = () => {
     showModal = !showModal;
@@ -39,8 +57,8 @@
               <InputAddon>
                 <LockOutline class="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </InputAddon>
-              <Input id="password" type='password' placeholder="" />
-              <Button color='dark' id='generate-password'>
+              <Input id="password" type='password' value={newPassword || password}/>
+              <Button color='dark' id='generate-password' on:click={generateNewPassword}>
                 <WandMagicSparklesOutline />
               </Button>
               <Button color='light' id='configure-generator' on:click={toggleModal}>

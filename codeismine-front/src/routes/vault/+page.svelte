@@ -14,13 +14,16 @@
 
   let searchTerm = $state("");
 
-  const query = createQuery({
-      queryKey: ['credentials'],
-      queryFn: () => fetchCredentials({ searchTerm })
-    });
+  let query = createQuery({
+    queryKey: ['credentials'],
+    queryFn: () => fetchCredentials({ searchTerm })
+  });
 
   // $effect(() => {
-  //   query
+  //   query = createQuery({
+  //     queryKey: ['credentials'],
+  //     queryFn: () => fetchCredentials({ searchTerm })
+  //   });
   // })
 
   let toastStatus = $state(false);

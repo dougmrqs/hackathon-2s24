@@ -1,6 +1,7 @@
 <script lang="ts">
 	import validateEmail from 'email-validator';
 	import { Label, Input, Card, Button, Helper } from 'flowbite-svelte';
+  import { goto } from '$app/navigation';
 
 	let email = $state('');
 	let password = $state('');
@@ -13,6 +14,7 @@
 
 	const submit = (e: SubmitEvent) => {
 		console.log(e, email, password);
+		goto("/vault")
 	};
 </script>
 
