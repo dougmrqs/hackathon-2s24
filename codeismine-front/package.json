@@ -47,6 +47,7 @@
 		"@tanstack/svelte-query": "^5.60.6",
 		"copy-to-clipboard": "^3.3.3",
 		"email-validator": "^2.0.4",
-		"svelte-fa": "^4.0.3"
+		"svelte-fa": "^4.0.3",
+		"totp-generator": "^1.0.0"
 	}
 }

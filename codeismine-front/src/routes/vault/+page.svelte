@@ -53,7 +53,10 @@
 
 <SuccessToast bind:toastStatus/>
 
-<TableSearch divClass="w-full" innerDivClass="px-0" classInput="w-full" bind:inputValue={searchTerm}/>
+<div class='flex w-full align-center'>
+  <TableSearch divClass="w-full" innerDivClass="px-0" classInput="w-full" bind:inputValue={searchTerm}/>
+  <Button class="ml-2" href="/vault/new">Add new</Button>
+</div>
 
 {#if $query.isLoading || $query.isFetching}
   <Spinner size={12} class="mt-8"/>
