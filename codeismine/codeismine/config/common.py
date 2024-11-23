@@ -9,13 +9,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class Common(Configuration):
 
     INSTALLED_APPS = (
+        'corsheaders',
+
         'django.contrib.admin',
         'django.contrib.auth',
         'django.contrib.contenttypes',
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
-
 
         # Third party apps
         'rest_framework',            # utilities for rest apis
@@ -24,11 +25,13 @@ class Common(Configuration):
 
         # Your apps
         'codeismine.users',
+        'codeismine.credentials',
 
     )
 
     # https://docs.djangoproject.com/en/2.0/topics/http/middleware/
     MIDDLEWARE = (
+        'corsheaders.middleware.CorsMiddleware',
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.common.CommonMiddleware',
@@ -38,6 +41,7 @@ class Common(Configuration):
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
     )
 
+    CORS_ORIGIN_ALLOW_ALL = True
     ALLOWED_HOSTS = ["*"]
     ROOT_URLCONF = 'codeismine.urls'
     SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
