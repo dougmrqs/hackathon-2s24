@@ -2,11 +2,10 @@
   import { Toast } from 'flowbite-svelte';
   import { CheckCircleSolid } from 'flowbite-svelte-icons';
 
-  // export let toastStatus = false;
-  let { toastStatus = $bindable() } = $props(); 
+  let { toastStatus = $bindable(false) } = $props();
 </script>
 
-<Toast color="green" bind:toastStatus on:close={() => toastStatus = false}>
+<Toast position="top-right" color="green" bind:toastStatus on:close={() => toastStatus = false}>
   <svelte:fragment slot="icon">
     <CheckCircleSolid class="w-5 h-5" />
     <span class="sr-only">Check icon</span>

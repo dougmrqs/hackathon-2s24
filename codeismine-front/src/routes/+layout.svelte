@@ -3,15 +3,22 @@
 	import '../app.css';
 	
 	let { children } = $props();
+
+  import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
+
+  const queryClient = new QueryClient();
 </script>
 
-<div class="app">
-	<Header />
 
-	<main>
-		{@render children()}
-	</main>
-</div>
+<QueryClientProvider client={queryClient}>
+	<div class="app">
+		<Header />
+
+		<main>
+			{@render children()}
+		</main>
+	</div>
+</QueryClientProvider>
 
 <style>
 	.app {

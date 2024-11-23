@@ -10,6 +10,9 @@ export default {
 
   theme: {
     extend: {
+      maxWidth:{
+        '30vw': '30vw',
+      },
       colors: {
         // flowbite-svelte
         primary: {

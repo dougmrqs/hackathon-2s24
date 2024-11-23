@@ -1,103 +1,110 @@
 <script lang='ts'>
+	import { onDestroy } from 'svelte';
+
   import Fa from 'svelte-fa'
-  import SuccessToast from './success-toast.svelte';
+  import copyToClipboard from 'copy-to-clipboard';
+  import { createQuery } from '@tanstack/svelte-query'
+  import { Spinner } from 'flowbite-svelte';
 
   import { faVault, faUser, faKey, faClock } from '@fortawesome/free-solid-svg-icons'
+  import { Tooltip, Button, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Input, TableSearch } from 'flowbite-svelte';
 
-  import { Tooltip, Button, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
+  import { fetchCredentials } from '../../lib/vault/api';
+  import SuccessToast from './SuccessToast.svelte';
 
-  let credentials = [
-    {
-      id: 1,
-      name: 'github',
-      username: 'email@provider.com',
-      password: 'very#sotrong#password',
-      price: '134567',
-    },
-    {
-      id: 2,
-      name: 'Microsoft Outlook',
-      username: 'emai2l@provider.com',
-      password: 'very#sotrong#password',
-      price: '123456',
-    },
-    {
-      id: 3,
-      name: 'PunchClock',
-      username: 'emai2l@provider.com',
-      password: 'very#sotrong#password',
-      price: '123456',
-    },
-  ];
+  let searchTerm = $state("");
+
+  const query = createQuery({
+      queryKey: ['credentials'],
+      queryFn: () => fetchCredentials({ searchTerm })
+    });
+
+  // $effect(() => {
+  //   query
+  // })
 
   let toastStatus = $state(false);
+  let toastTimer: number;
 
-  const copyToClipboard = async (credential: string) => {
-    console.log(toastStatus)
+  const triggerSuccessToast = () => {
+    if (toastTimer) clearTimeout(toastTimer);
+
+    toastStatus = true;
+
+    toastTimer = setTimeout(() => { toastStatus = false }, 4000);
+  }
+
+  const doCopyToClipboard = async (credential: string) => {
     try {
-      await navigator.clipboard.writeText(credential);
-      toastStatus = true;
+      copyToClipboard(credential);
+      triggerSuccessToast();
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
   }
+
+  onDestroy(() => {
+    if (toastTimer) clearTimeout(toastTimer);
+	});
 </script>
 
-<div>
-  <Table hoverable={true}>
+<SuccessToast bind:toastStatus/>
+
+<TableSearch divClass="w-full" innerDivClass="px-0" classInput="w-full" bind:inputValue={searchTerm}/>
+
+{#if $query.isLoading || $query.isFetching}
+  <Spinner size={12} class="mt-8"/>
+{:else if $query.isError}
+  <p>{$query.error.message}</p>
+{:else if $query.isSuccess}
+  <Table divClass="relative overflow-x-auto rounded-md w-full mt-4" hoverable={true}>
     <TableHead>
       <TableHeadCell>Name</TableHeadCell>
-      <TableHeadCell></TableHeadCell>
-      <TableHeadCell></TableHeadCell>
-      <TableHeadCell></TableHeadCell>
-      <TableHeadCell></TableHeadCell>
+      <TableHeadCell>User</TableHeadCell>
       <TableHeadCell>
-        <span class="sr-only">Edit</span>
+        <span class="sr-only">Actions</span>
       </TableHeadCell>
     </TableHead>
     <TableBody tableBodyClass="divide-y">
-      {#each credentials as credential}
+      {#each $query.data as credential}
         <TableBodyRow>
-          <TableBodyCell>{credential.name}</TableBodyCell>
-          <TableBodyCell>
-            <Tooltip triggeredBy='#show-credentials'>
-              Show/edit username and password
-            </Tooltip>
-            <Button id='show-credentials'>
+          <TableBodyCell class="font-bold">{credential.name}</TableBodyCell>
+          <TableBodyCell>{credential.username}</TableBodyCell>
+          <TableBodyCell class="gap-x-2 flex justify-end">
+            <Button class="px-3" id='show-credentials'>
               <Fa icon={faVault}/>
             </Button>
-          </TableBodyCell>
-          <TableBodyCell>
-            <Tooltip triggeredBy='#copy-username'>
-              Copy username
-            </Tooltip>
-            <Button id='copy-username' on:click={() => copyToClipboard(credential.username)}>
+
+            <Button class="px-3" id='copy-username' on:click={() => doCopyToClipboard(credential.username)}>
               <Fa icon={faUser}/>
             </Button>
-          </TableBodyCell>
-          <TableBodyCell>
-            <Tooltip triggeredBy='#copy-password'>
-              Copy password
-            </Tooltip>
-            <Button id='copy-password' on:click={() => copyToClipboard(credential.password)}>
+
+            <Button class="px-3" id='copy-password' on:click={() => doCopyToClipboard(credential.password)}>
               <Fa icon={faKey}/>
             </Button>
-          </TableBodyCell>
-          <TableBodyCell>
-            <Tooltip triggeredBy='#copy-totp'>
-              Copy TOTP
-            </Tooltip>
-            <Button id='copy-totp' disabled>
+
+            <Button class="px-3" id='copy-totp' on:click={() => doCopyToClipboard(credential.totp)} disabled>
               <Fa icon={faClock}/>
             </Button>
           </TableBodyCell>
-          <TableHeadCell>
-            <span class="sr-only">Edit</span>
-          </TableHeadCell>
         </TableBodyRow>
       {/each}
     </TableBody>
   </Table>
+{/if}
 
-  <SuccessToast {toastStatus}/>
-</div>
+<Tooltip triggeredBy='#show-credentials'>
+  Show/edit username and password
+</Tooltip>
+
+<Tooltip triggeredBy='#copy-username'>
+  Copy username
+</Tooltip>
+
+<Tooltip triggeredBy='#copy-password'>
+  Copy password
+</Tooltip>
+
+<Tooltip triggeredBy='#copy-totp'>
+  Copy TOTP
+</Tooltip>
