@@ -1,16 +1,16 @@
-import Crypto from 'crypto';
+// import Crypto from 'crypto';
 
 export function encrypt(data: string): string {
-  const subtle = Crypto.subtle;
+  // const subtle = Crypto.subtle;
 
-  const key = subtle.generateKey(
-    {
-      name: 'AES-GCM',
-      length: 256,
-    },
-    true,
-    ['encrypt', 'decrypt']
-  );
+  // const key = subtle.generateKey(
+  //   {
+  //     name: 'AES-GCM',
+  //     length: 256,
+  //   },
+  //   true,
+  //   ['encrypt', 'decrypt']
+  // );
 
   return data;
 }

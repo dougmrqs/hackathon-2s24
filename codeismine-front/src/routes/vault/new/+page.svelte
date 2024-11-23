@@ -45,13 +45,12 @@
     showModal = !showModal;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const a = await $mutation.mutateAsync({
+  const handleSubmit = async () => {
+    await $mutation.mutateAsync({
       name,
       username,
       password,
-      totpKey
+      totpKey,
     });
     
     goto('/vault');
@@ -63,13 +62,14 @@
     <h2 class="text-lg font-semibold">Details</h2>
     <p class="text-sm text-gray-600">View and manage your credential</p>
     <div class="mt-2">
+      <!-- svelte-ignore event_directive_deprecated -->
       <form action="" on:submit={handleSubmit}>
           <Label for="website-admin" class="block mb-2">Credential Name
             <ButtonGroup class="w-full">
               <InputAddon>
                 <BuildingOutline class="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </InputAddon>
-              <Input id="website-admin" placeholder="github.com" value={name} on:change={(e) => name = e.target.value}/>
+              <Input id="website-admin" placeholder="github.com" value={name} on:change={(e) => name = e.target?.value}/>
             </ButtonGroup>
           </Label>
 
@@ -78,7 +78,7 @@
               <InputAddon>
                 <UserCircleOutline class="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </InputAddon>
-              <Input id="username" placeholder="username" value={username} on:change={(e) => username = e.target.value}/>
+              <Input id="username" placeholder="username" value={username} on:change={(e) => username = e.target?.value}/>
             </ButtonGroup>
           </Label>
 
@@ -87,7 +87,7 @@
               <InputAddon>
                 <LockOutline class="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </InputAddon>
-              <Input id="password" type='password' value={password} on:change={(e) => password = e.target.value}/>
+              <Input id="password" type='password' value={password} on:change={(e) => password = e.target?.value}/>
               <Button color='dark' id='generate-password' on:click={generateNewPassword}>
                 <WandMagicSparklesOutline />
               </Button>
@@ -108,9 +108,18 @@
               <InputAddon>
                 <ShieldCheckOutline class="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </InputAddon>
-              <Input id="totp-key" value={totpKey} on:change={(e) => totpKey = e.target.value}/>
+              <Input id="totp-key" value={totpKey} on:change={(e) => totpKey = e.target?.value}/>
             </ButtonGroup>
           </Label>
+
+          <!-- <Label for="master-password" class="block mt-8 mb-2">CodeIsMine password
+            <ButtonGroup class="w-full">
+              <InputAddon>
+                <LockOutline class="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </InputAddon>
+              <Input id="master-password" type="password" value={accountPassword} on:change={(e) => accountPassword = e.target?.value}/>
+            </ButtonGroup>
+          </Label> -->
 
           <div class="flex justify-between">
             <Button class='mt-2' type='submit' color='blue'>Save</Button>

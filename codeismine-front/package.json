@@ -45,6 +45,8 @@
 		"@fortawesome/free-solid-svg-icons": "^6.7.1",
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@tanstack/svelte-query": "^5.60.6",
+		"base32": "^0.0.7",
+		"base32-encode": "^2.0.0",
 		"copy-to-clipboard": "^3.3.3",
 		"email-validator": "^2.0.4",
 		"svelte-fa": "^4.0.3",

@@ -4,15 +4,30 @@
 	let { children } = $props();
 
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
+	import { goto } from '$app/navigation';
+	import { sessionTimeoutTimer } from '$lib/session';
+	import Fa from 'svelte-fa';
+	import { faVault } from '@fortawesome/free-solid-svg-icons';
 
   const queryClient = new QueryClient();
+
+	const sessionTimer = setTimeout(() => {
+		sessionTimeoutTimer.set(null);
+		localStorage.removeItem('token');
+		goto('/lock');
+	}, 1000 * 60 * 30);
+
+	sessionTimeoutTimer.set(sessionTimer);
 </script>
 
 <QueryClientProvider client={queryClient}>
 	<div class="app">
 		<header>
 			<a href="/">
-				<h1 class="font-black">CodeIsMine</h1>
+				<div class='flex justify-center items-center h-full'>
+					<h1 class="font-black">CodeIsMine</h1>
+					<Fa class='ml-3' size='lg' icon={faVault} />
+				</div>
 			</a>
 		</header>
 
